@@ -1,0 +1,7 @@
+.idea/
+logs/*
+!logs/.keep
+*.pyc
+flask-env/
+env/
+.DS_Store
