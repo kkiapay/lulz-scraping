@@ -24,25 +24,24 @@ def call_api(url, type, headers={}, parameters={}, is_json=False):
     """
     app.logger.info("Initiating API Call with following info: url => {} payload => {}".format(url, parameters))
     if "GET" in type:
-        response = requests.get(url, headers=headers, params=parameters, timeout=5)
+        response = requests.get(url, headers=headers, params=parameters)
     elif "POST" in type:
         if is_json:
-            response = requests.post(url, headers=headers, json=parameters, timeout=5)
+            response = requests.post(url, headers=headers, json=parameters)
         else:
-            response = requests.post(url, headers=headers, params=parameters, timeout=5)
+            response = requests.post(url, headers=headers, params=parameters)
     elif "PUT" in type:
         if is_json:
-            response = requests.put(url, headers=headers, json=parameters, timeout=5)
+            response = requests.put(url, headers=headers, json=parameters)
         else:
-            response = requests.put(url, headers=headers, params=parameters, timeout=5)
+            response = requests.put(url, headers=headers, params=parameters)
     elif "DELETE" in type:
-        response = requests.delete(url, headers=headers, params=parameters, timeout=5)
+        response = requests.delete(url, headers=headers, params=parameters)
     else:
         raise Exception("unsupported request method.")
     # result = json.loads(response.text)
-    result = response.text
-    app.logger.info("API response => %s", result)
-    return result
+    app.logger.info("API response => %s", response.url)
+    return response
 
 
 def wrap_response_object(dictionnary, url):
@@ -55,8 +54,22 @@ def wrap_response_object(dictionnary, url):
         response['location'] = dictionnary['location']
         response['rc'] = ''
         response['country'] = 'Benin'
-        response['country_code'] = 'BJ'
+        response['country_code'] = '229'
+        response['code_iso'] = 'BJ'
         response['date'] = ''
+        response['other_information'] = ''
+    elif url in URL.cepici_url:
+        response['name'] = dictionnary['Raison Sociale']
+        response['instigator'] = ''
+        response['legal_form'] = dictionnary['Statut Juridique']
+        response['branch_of_activity'] = ''
+        response['location'] = ''
+        response['rc'] = dictionnary['N° RCCM']
+        response['country'] = "Côte d'Ivoire"
+        response['county_code'] = '225'
+        response['code_iso'] = 'CI'
+        response['date'] = dictionnary['Date']
+        response['other_information'] = dictionnary['more']
     
     return response
 
@@ -69,9 +82,9 @@ def search_on_gufebenin(searched_value):
     """
     response = call_api(url=URL.gufebenin_url, type="POST", parameters={"filter-search": searched_value})
 
-    soup = BeautifulSoup(response, "html.parser")
+    soup = BeautifulSoup(response.text, "html.parser")
     # target form#adminForm
-    form_tag = soup.find("form", id="adminForm")
+    form_tag = soup.find('form', id='adminForm')
 
     # extract list of result in that web page
     all_li_tag = form_tag.find_all("li")
@@ -79,9 +92,9 @@ def search_on_gufebenin(searched_value):
     result = []
 
     for li in all_li_tag:
-        if (li.find("span")):
+        if (li.find('span')):
             # get all key {Promotteur; Forme juridique; }
-            all_u_tag_content = li.find("span").find_all("u")
+            all_u_tag_content = li.find('span').find_all('u')
         obj = dict()
         # build dict
         obj['name'] = (li.find("h3").contents[2])[2:].strip("\t")
@@ -91,25 +104,31 @@ def search_on_gufebenin(searched_value):
         result.append(wrap_response_object(dictionnary=obj, url=URL.gufebenin_url))
     return result
 
-def search_on_cepici(date=None, rccm=None, company_name=None):
+def search_on_cepici(date="", rccm="", company_name=""):
     """
     """
-    response = call_api(url=URL.cepici_url, type="GET", parameters={"manydata%5B%5D": "", "manydata%5B%5D": "CI-ABJ-2019-B-8875", "manydata%5B%5D": "IVOIRE EVENTS", "manydata%5B%5D": None, "countInit": 0})
+    response = call_api(url=URL.cepici_url+'?'+"manydata[]="+date+"&"+"manydata[]="+rccm+"&"+"manydata[]="+company_name+"&"+"manydata[]=&"+"countInit=0", type="GET")
 
-    soup = BeautifulSoup(response, "html.parser")
+    soup = BeautifulSoup(response.text, "html.parser")
 
     # extract all object key
-    all_th_tag = soup.find_all('th')
-    # extract all key value
-    all_td_tag = soup.find_all('td')
+    all_th_tag = soup.find('thead').find('tr').find_all('th')
+    key_content = []
+    for key in all_th_tag:
+        key_content.append(key.contents[0])
+    
+    # extract all value of each key
+    all_tr_result = soup.find_all('tr', id='contenu')
 
     result = []
 
-    for th in all_th_tag:
+    for tr in all_tr_result:
         obj = dict()
-        for td in all_td_tag:
-            obj[th.contents[0]] = str(td)
-            app.logger.info(td.contents[0])
-    result.append(str(soup))
-        # result.append(wrap_response_object(dictionnary=obj, url=URL.cepici_url))
+        for key, value in zip(key_content, tr.find_all('td')):
+            if (key in "Raison Sociale"):
+                obj[key] = value.contents[1].contents[0].strip()
+                obj['more'] = value.contents[1].get('href')
+            else:
+                obj[key] = value.contents[0]
+        result.append(wrap_response_object(dictionnary=obj, url=URL.cepici_url))
     return result
