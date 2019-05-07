@@ -7,8 +7,11 @@ gunicorn==19.9.0
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10.1
+lxml==4.3.3
 MarkupSafe==1.1.1
+PyYAML==5.1
 requests==2.21.0
+ruamel.yaml==0.15.94
 soupsieve==1.9.1
 urllib3==1.24.2
 Werkzeug==0.15.2
