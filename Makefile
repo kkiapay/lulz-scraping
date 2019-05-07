@@ -8,4 +8,4 @@ run_dev:
 	. flask-env/bin/activate && python run.py
 
 run_prod:
-	. venv/bin/activate && APPLICATION_ENV="Production" gunicorn -k gevent --bind 0.0.0.0:8080 run:app
+	. flask-env/bin/activate && APPLICATION_ENV="Production" gunicorn --bind 0.0.0.0:8080 run:app
