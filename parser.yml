@@ -1,0 +1,24 @@
+site:
+  - gufebenin
+  - cepici
+
+gufebenin:
+  url: http://www.gufebenin.org/index.php/entreprises
+  request_type: POST
+  parameters:
+    - filter-search
+  parser:
+    name: form#adminForm li > h3
+    promotteur: form#adminForm li > span > u:nth-child(1)
+    legal_form: form#adminForm li > span > u:nth-child(3)
+
+cepici:
+  url: https://cepici.ci/views/annonces_legales/Affichage_ajax/SearchRS.php?countInit=0
+  request_type: GET
+  parameters:
+    - search_rs
+  parser:
+    name: tr#contenu a
+    legal_form: tr#contenu > td:nth-child(4)
+    rccm_number: tr#contenu > td:nth-child(2)
+    date_of_creation: tr#contenu > td:nth-child(1)

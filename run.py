@@ -13,9 +13,9 @@ app = Flask(__name__)
 @app.route("/api", methods=["POST"])
 def search_company():
     if request.form['company_name']:
-        result = utils.search_on_gufebenin(searched_value=request.form['company_name'])
-        result_ci = utils.search_on_cepici(company_name=request.form['company_name'], rccm=request.form['rccm'])
-        return build_response.build_json(result + result_ci)
+        # result = utils.search_on_gufebenin(searched_value=request.form['company_name'])
+        # result_ci = utils.search_on_cepici(company_name=request.form['company_name'], rccm=request.form['rccm'])
+        return build_response.build_json(utils.execute_request(request.form['company_name'])) # build_response.build_json(result + result_ci)
     else:
         return "company_name is required"
 
