@@ -1,1 +1,1 @@
-web: python run.py && APPLICATION_ENV="Production" gunicorn run:app 
+worker: python run.py && APPLICATION_ENV="Production" gunicorn run:app 
