@@ -1,7 +1,7 @@
 import requests
 import json
+import re as regex
 import urllib.request
-import time
 from bs4 import BeautifulSoup, Comment
 from ruamel.yaml import YAML
 
@@ -63,7 +63,7 @@ def execute_request(searched_value):
 def get_html_response(parser=yaml_to_json(), query=""):
 
     response = dict()
-    
+
     for item in parser['site']:
         for param in parser[item]['parameters']:
             html_response = call_api(url=parser[item]['url'], type=parser[item]['request_type'], parameters={
@@ -85,12 +85,23 @@ def extractor(html="", endpoint="", parser=yaml_to_json()):
 
     result = dict()
 
+    other_result = []
+
     for site in parser[endpoint]['parser']:
-        soup_result = soup.select(parser[endpoint]['parser'][site])
+        soup_result = []
+        if 'selector' in parser[endpoint]['parser'][site]:
+            soup_result = soup.select(parser[endpoint]['parser'][site]['selector'])
+        else:
+            soup_result = soup.select(parser[endpoint]['parser'][site])
+        
         for tag_selected in soup_result:
             for element in tag_selected(text=lambda text: isinstance(text, Comment)):
                 element.extract()
 
-            result[site] = tag_selected.contents[0].strip()
+            if 'selector' in parser[endpoint]['parser'][site]:
+                result[site] = regex.search(r"<u>Promotteur</u>:([a-zA-Z ]+)<br>", str(tag_selected)) #parser[endpoint]['parser'][site]['action']
+                # other_result = regex.search(r"{}".format(parser[endpoint]['parser'][site]['action']), tag_selected)
+            else:
+                result[site] = tag_selected.contents[0].strip()
 
     return result
