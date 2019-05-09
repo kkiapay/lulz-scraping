@@ -9,8 +9,12 @@ gufebenin:
     - filter-search
   parser:
     name: form#adminForm li > h3
-    promotteur: form#adminForm li > span > u:nth-child(1)
-    legal_form: form#adminForm li > span > u:nth-child(3)
+    promotteur:
+      selector: form#adminForm li > span
+      action: <u>Promotteur</u>:([a-zA-Z ]+)<br>
+    legal_form:
+      selector: form#adminForm li > span
+      action: <u>Forme juridique</u>:([a-zA-Z ]+)<br>
 
 cepici:
   url: https://cepici.ci/views/annonces_legales/Affichage_ajax/SearchRS.php?countInit=0
