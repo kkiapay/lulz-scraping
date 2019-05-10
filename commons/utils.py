@@ -101,6 +101,6 @@ def extractor(html="", endpoint="", parser=yaml_to_json()):
             if 'selector' in parser[endpoint]['parser'][site]:
                 result[site] = regex.search(r"{}".format(parser[endpoint]['parser'][site]['action']), tag_selected.prettify().replace('\n', '')).group(1).strip()
             else:
-                result[site] = tag_selected.contents[0].strip('\n')
+                result[site] = tag_selected.contents[0].strip()
 
     return result
