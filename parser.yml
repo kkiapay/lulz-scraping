@@ -8,13 +8,15 @@ gufebenin:
   parameters:
     - filter-search
   parser:
-    name: form#adminForm li > h3
+    name:
+      selector: form#adminForm li > h3
+      action: <h3>\s*([^<]+)\s*</h3>
     promotteur:
       selector: form#adminForm li > span
-      action: <u>Promotteur</u>:([a-zA-Z ]+)<br>
+      action: "<u>\\s*Promotteur\\s*</u>\\s*:\\s*([^<]+)\\s*<br/>"
     legal_form:
       selector: form#adminForm li > span
-      action: <u>Forme juridique</u>:([a-zA-Z ]+)<br>
+      action: "<u>\\s*Forme\\s*juridique\\s*</u>\\s*:\\s*([^<]+)\\s*<br/>"
 
 cepici:
   url: https://cepici.ci/views/annonces_legales/Affichage_ajax/SearchRS.php?countInit=0

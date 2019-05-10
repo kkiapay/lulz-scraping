@@ -85,23 +85,22 @@ def extractor(html="", endpoint="", parser=yaml_to_json()):
 
     result = dict()
 
-    other_result = []
-
     for site in parser[endpoint]['parser']:
+        
         soup_result = []
+
         if 'selector' in parser[endpoint]['parser'][site]:
             soup_result = soup.select(parser[endpoint]['parser'][site]['selector'])
         else:
             soup_result = soup.select(parser[endpoint]['parser'][site])
-        
+
         for tag_selected in soup_result:
             for element in tag_selected(text=lambda text: isinstance(text, Comment)):
                 element.extract()
 
             if 'selector' in parser[endpoint]['parser'][site]:
-                result[site] = regex.search(r"<u>Promotteur</u>:([a-zA-Z ]+)<br>", str(tag_selected)) #parser[endpoint]['parser'][site]['action']
-                # other_result = regex.search(r"{}".format(parser[endpoint]['parser'][site]['action']), tag_selected)
+                result[site] = regex.search(r"{}".format(parser[endpoint]['parser'][site]['action']), tag_selected.prettify().replace('\n', '')).group(1).strip()
             else:
-                result[site] = tag_selected.contents[0].strip()
+                result[site] = tag_selected.contents[0].strip('\n')
 
     return result
