@@ -56,7 +56,7 @@ def execute_request(searched_value):
     for key in response_list:
         result = extractor(html=response_list[key], endpoint=key)
         if result:
-            result_list.append(result)
+            result_list = result_list + result
     return result_list
 
 
@@ -73,9 +73,7 @@ def get_html_response(parser=yaml_to_json(), query=""):
 
     return response
 
-
-
-
+# extract all parser result
 def extractor(html="", endpoint="", parser=yaml_to_json()):
     """
     :html > represente your html document
@@ -85,22 +83,37 @@ def extractor(html="", endpoint="", parser=yaml_to_json()):
 
     result = dict()
 
-    for site in parser[endpoint]['parser']:
-        
+    for key in parser[endpoint]['parser']:
         soup_result = []
-
-        if 'selector' in parser[endpoint]['parser'][site]:
-            soup_result = soup.select(parser[endpoint]['parser'][site]['selector'])
+        parser_result = []
+        if 'selector' in parser[endpoint]['parser'][key]:
+            soup_result = soup.select(parser[endpoint]['parser'][key]['selector'])
         else:
-            soup_result = soup.select(parser[endpoint]['parser'][site])
-
+            soup_result = soup.select(parser[endpoint]['parser'][key])
+        
         for tag_selected in soup_result:
             for element in tag_selected(text=lambda text: isinstance(text, Comment)):
                 element.extract()
 
-            if 'selector' in parser[endpoint]['parser'][site]:
-                result[site] = regex.search(r"{}".format(parser[endpoint]['parser'][site]['action']), tag_selected.prettify().replace('\n', '')).group(1).strip()
+            if 'regex' in parser[endpoint]['parser'][key]:
+                reg = regex.search(r"{}".format(parser[endpoint]['parser'][key]['regex']), tag_selected.prettify().replace('\n', ''))
+                if reg:
+                    parser_result.append(reg.group(1))
+                else:
+                    parser_result.append('')
             else:
-                result[site] = tag_selected.contents[0].strip()
+                parser_result.append(tag_selected.contents[0].strip())
+        result[key] = parser_result
 
+    return build_response(result)
+
+# return list of response object
+def build_response(dictionnary):
+    result = []
+    first_key = list(dictionnary.keys())[0]
+    for i in range(len(dictionnary[first_key])):
+        object_result = dict()
+        for key in dictionnary:
+            object_result[key] = dictionnary[key][i]
+        result.append(object_result)
     return result
