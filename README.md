@@ -1,1 +1,1 @@
-# lulz-scrapping
+# lulz-scraping
