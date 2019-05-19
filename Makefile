@@ -9,3 +9,6 @@ run_dev:
 
 run_prod:
 	. flask-env/bin/activate && APPLICATION_ENV="Production" gunicorn --bind 0.0.0.0:8080 run:app
+
+run_docker:
+	gunicorn run:app --bind 0.0.0.0:8080 --access-logfile=logs/gunicorn-access.log --error-logfile logs/gunicorn-error.log
