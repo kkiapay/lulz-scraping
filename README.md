@@ -1,4 +1,4 @@
-# lulz-scrapping
+# lulz-scraping
 
 #Example
 
