@@ -1,6 +1,6 @@
 # lulz-scraping
 
-#Example
+## Example
 
 Let's take the following `HTML example`:
 
