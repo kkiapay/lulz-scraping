@@ -13,16 +13,10 @@ CORS(app)
 
 @app.route("/api", methods=["GET"])
 def search_company():
-    if request.args['company_name'] and (request.args['country'] != None):
-        return build_response.build_json(utils.execute_request(request.args['company_name'], specific_key=request.args['country'].upper()))
     if request.args['company_name']:
         return build_response.build_json(utils.execute_request(request.args['company_name']))
     else:
         return "company_name is required"
-
-@app.route("/country", methods=["GET"])
-def country_list():
-    return build_response.build_json(utils.get_country_list())
 
 @app.route("/", methods=["GET"])
 def hello_world():

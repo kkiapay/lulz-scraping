@@ -17,7 +17,6 @@ gufebenin:
     legal_form:
       selector: form#adminForm li > span
       regex: "<u>\\s*Forme\\s*juridique\\s*</u>\\s*:\\s*([^<]+)\\s*<br/>"
-  country: BJ
 
 cepici:
   url: https://cepici.ci/views/annonces_legales/Affichage_ajax/SearchRS.php?countInit=0
@@ -29,8 +28,9 @@ cepici:
     legal_form: tr#contenu > td:nth-child(4)
     rccm_number: tr#contenu > td:nth-child(2)
     date_of_creation: tr#contenu > td:nth-child(1)
-  country: CI
 
 country:
   - BJ
   - CI
+  - TG
+  - SN
