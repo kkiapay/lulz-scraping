@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 import re as regex
 import urllib.request
 from bs4 import BeautifulSoup, Comment
@@ -38,7 +39,6 @@ def call_api(url, type, headers={}, parameters={}, is_json=False):
     return response
 
 
-
 def yaml_to_json():
     yaml_dict = None
     
@@ -49,13 +49,20 @@ def yaml_to_json():
     return yaml_dict
 
 '''
+    List of supported country
+'''
+def get_country_list(parser=yaml_to_json()):
+    return parser['country']
+
+
+'''
     I HAVE TO REMOVE specific_key IN THAT function BAD ---> VERY BAD
 '''
 def execute_request(searched_value, specific_key=""):
     response_list = get_html_response(query=searched_value, specific_key=specific_key)
     result_list = []
     for key in response_list:
-        result = extractor(html=response_list[key], endpoint=key)
+        result = extractor(html=response_list[key], endpoint=key, specific_key=specific_key)
         if result:
             result_list = result_list + result
     return result_list
@@ -65,10 +72,12 @@ def execute_request(searched_value, specific_key=""):
 '''
 def get_html_response(parser=yaml_to_json(), query="", specific_key=""):
 
-    if specific_key == 'BJ':
-        parser.pop('cepici', None)
-    elif specific_key == 'CI':
-        parser.pop('gufebenin', None)
+    if specific_key == "BJ":
+        parser.pop("cepici", None)
+        del parser["site"][1]
+    if specific_key == "CI":
+        parser.pop("gufebenin", None)
+        del parser["site"][0]
 
     response = dict()
 
@@ -81,8 +90,19 @@ def get_html_response(parser=yaml_to_json(), query="", specific_key=""):
 
     return response
 
+'''
+    I HAVE TO REMOVE specific_key IN THAT function BAD ---> VERY BAD
+'''
 # extract all parser result
-def extractor(html="", endpoint="", parser=yaml_to_json()):
+def extractor(html="", endpoint="", parser=yaml_to_json(), specific_key=""):
+
+    if specific_key == "BJ":
+        parser.pop("cepici", None)
+        del parser["site"][1]
+    if specific_key == "CI":
+        parser.pop("gufebenin", None)
+        del parser["site"][0]
+
     """
     :html > represente your html document
     :parser > parser key in .yml file config
