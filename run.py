@@ -14,7 +14,7 @@ CORS(app)
 @app.route("/api", methods=["GET"])
 def search_company():
     if request.args['company_name']:
-        return build_response.build_json(utils.execute_request(request.args['company_name']))
+        return build_response.build_json(utils.execute_request(request.args['company_name'], request.args['country']))
     else:
         return "company_name is required"
 

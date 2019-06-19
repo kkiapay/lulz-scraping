@@ -48,10 +48,11 @@ def yaml_to_json():
     
     return yaml_dict
 
-
-
-def execute_request(searched_value):
-    response_list = get_html_response(query=searched_value)
+'''
+    I HAVE TO REMOVE specific_key IN THAT function BAD ---> VERY BAD
+'''
+def execute_request(searched_value, specific_key=""):
+    response_list = get_html_response(query=searched_value, specific_key=specific_key)
     result_list = []
     for key in response_list:
         result = extractor(html=response_list[key], endpoint=key)
@@ -59,8 +60,15 @@ def execute_request(searched_value):
             result_list = result_list + result
     return result_list
 
+'''
+    I HAVE TO REMOVE specific_key IN THAT function BAD ---> VERY BAD
+'''
+def get_html_response(parser=yaml_to_json(), query="", specific_key=""):
 
-def get_html_response(parser=yaml_to_json(), query=""):
+    if specific_key == 'BJ':
+        parser.pop('cepici', None)
+    elif specific_key == 'CI':
+        parser.pop('gufebenin', None)
 
     response = dict()
 
