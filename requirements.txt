@@ -15,7 +15,7 @@ lxml==4.3.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 pylint==2.3.1
-PyYAML==5.1
+PyYAML==5.4
 requests==2.21.0
 ruamel.yaml==0.15.94
 six==1.12.0
